@@ -21,25 +21,26 @@ class Blog(db.Model):
         self.body = body
 
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/blog', methods=['POST', 'GET'])
 def index():
 
-    if request.method == 'POST':
-        blog_title = request.form['blog']
-        new_blog =Blog(blog_title)
-        db.session.add(new_blog)
-        db.session.commit()
-
     blogs = Blog.query.all()
-    completed_blogs = Blog.query.all()
+    
     return render_template('blog.html', title="Blogs!", blogs=blogs)
 
 @app.route('/newpost', methods=['POST','GET'])
 def newpost():
 
-    
+    if request.method == 'POST':
+        blog_title = cgi.escape(request.form['title'])
+        blog_body = cgi.escape(request.form['body'])
+        new_blog = Blog(blog_title, blog_body)
+        db.session.add(new_blog)
+        db.session.commit()
 
-    return render_template('newpost.html',title='New Post')
+        return redirect('/blog', title='Blogs')
+
+    return render_template('newpost.html', title='New Post')
 
 
 #@app.route('/delete-blog', methods=['POST'])

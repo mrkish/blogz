@@ -3,10 +3,11 @@
 
     <h2>Whatcha thinkin?</h2>
     <div class='post-body'>
-        <textarea action='/newpost' value='body'>
-
-        </textarea>
-        <input type='submit' value='Post!'/>
+        <form method='post'>
+        <p><label>Title: <input type='text' value={{title}}/></label></p>
+        <p><label>Post: <textarea value={{body}}></textarea></label></p>
+        <p><input type='submit' value='Post!'/></p>
+        </form>
     </div>
 
 {% endblock %}

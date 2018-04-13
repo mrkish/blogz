@@ -2,8 +2,13 @@
 {% block content %}
     <h2>Recent Posts</h2>
 
-
-    /* post blogs stuff */
+    {% for blog in blogs %}
+    
+    <h3>{{blog.title}}</h3>
+    <br>
+    {{blog.body}}
+    <hr>
+    {% endfor %}
 
 
 {% endblock %}
