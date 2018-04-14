@@ -7,6 +7,7 @@
         <h3><a href='/blog?id={{blog.id}}' value={{blog.id}}>{{blog.title}}</a></h3>
         <br>
         {{blog.body}}
+        <p>Posted: {{blog.dateTime}}</p>
         <hr>
 
         {% endfor %}
@@ -15,6 +16,7 @@
         <h3>{{blog_title}}</h3>
         <br>
         {{blog_body}}
+        <p>Posted on: {{blog_dateTime}}</p>
     {% endif %}
 
 {% endblock %}

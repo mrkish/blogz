@@ -1,5 +1,6 @@
 from flask import Flask, request, redirect, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 import cgi
 
 app = Flask(__name__)
@@ -15,10 +16,12 @@ class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
     body = db.Column(db.String(5000))
+    dateTime = db.Column(db.DateTime)
 
-    def __init__(self, title, body):
+    def __init__(self, title, body, dateTime):
         self.title = title
         self.body = body
+        self.dateTime = dateTime
 
 
 @app.route('/blog')
@@ -36,9 +39,9 @@ def index():
         
         blog_title = single_blog.title
         blog_body = single_blog.body
+        blog_dateTime = single_blog.dateTime
         
-
-        return render_template('blog.html', single_view=True, page_title=blog_title,blog_title=blog_title,blog_body=blog_body)
+        return render_template('blog.html', single_view=True, page_title=blog_title,blog_title=blog_title,blog_body=blog_body,blog_dateTime=blog_dateTime)
 
     blogs = Blog.query.all()
     
@@ -64,7 +67,9 @@ def newpost():
 
             return render_template('newpost.html', page_title='New Post', no_title_message=no_title_message, no_body_message=no_body_message, blog_title=blog_title,blog_body=blog_body)
         
-        new_blog = Blog(blog_title, blog_body)
+        dateTime = datetime.utcnow()
+
+        new_blog = Blog(blog_title, blog_body, dateTime)
         db.session.add(new_blog)
         db.session.commit()
 
