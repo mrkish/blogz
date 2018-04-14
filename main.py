@@ -21,20 +21,28 @@ class Blog(db.Model):
         self.body = body
 
 
-@app.route('/blog', methods=['POST', 'GET'])
+@app.route('/blog')
 def index():
 
-    blogs = Blog.query.all()
-
-    if request.method == 'GET' and request.args.get():
-        blog_id = request.args.get(blog.id)
-
+    if request.method == 'GET' and request.args.get('id'):
         single_view = True
+        blog_id = int(request.args.get('id'))
 
-        return render_template('blog.html', single_view=True, page_title=blog.name,blog.title=blog_title,blog.body=blog_body)
+        single_blog = Blog.query.get(blog_id)
+        
+        if single_blog == None:
+            flash('Blog id {0} does not exist!'.format(blog_id), 'error')
+            return redirect('/blog')
+        
+        blog_title = single_blog.title
+        blog_body = single_blog.body
+        
 
+        return render_template('blog.html', single_view=True, page_title=blog_title,blog_title=blog_title,blog_body=blog_body)
+
+    blogs = Blog.query.all()
     
-    return render_template('blog.html', page_title="Blogs!", blogs=blogs)
+    return render_template('blog.html', page_title="Blogs!", blogs=blogs, single_view=False)
 
 @app.route('/newpost', methods=['POST','GET'])
 def newpost():
@@ -43,16 +51,18 @@ def newpost():
         blog_title = cgi.escape(request.form['title'])
         blog_body = cgi.escape(request.form['body'])
 
-        error_msg = ''
+        no_title_message = ''
+        no_body_message = ''
+
         if not blog_title:
-            error_msg += 'Missing blog title! '
+            no_title_message = 'Missing blog title!'
             
         if not blog_body:
-            error_msg += 'Missing blog body!'
+            no_body_message = 'Missing blog body!'
 
-        if error_msg:
-            flash(error_msg, 'error')
-            return redirect('/newpost')
+        if no_body_message or no_title_message:
+
+            return render_template('newpost.html', page_title='New Post', no_title_message=no_title_message, no_body_message=no_body_message, blog_title=blog_title,blog_body=blog_body)
         
         new_blog = Blog(blog_title, blog_body)
         db.session.add(new_blog)
