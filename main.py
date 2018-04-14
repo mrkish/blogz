@@ -26,7 +26,7 @@ def index():
 
     blogs = Blog.query.all()
     
-    return render_template('blog.html', title="Blogs!", blogs=blogs)
+    return render_template('blog.html', page_title="Blogs!", blogs=blogs)
 
 @app.route('/newpost', methods=['POST','GET'])
 def newpost():
@@ -38,9 +38,9 @@ def newpost():
         db.session.add(new_blog)
         db.session.commit()
 
-        return redirect('/blog', title='Blogs')
+        return redirect('/blog')
 
-    return render_template('newpost.html', title='New Post')
+    return render_template('newpost.html', page_title='New Post')
 
 
 #@app.route('/delete-blog', methods=['POST'])
