@@ -43,7 +43,7 @@ def index():
         
         return render_template('blog.html', single_view=True, page_title=blog_title,blog_title=blog_title,blog_body=blog_body,blog_dateTime=blog_dateTime)
 
-    blogs = Blog.query.all()
+    blogs = Blog.query.order_by(Blog.dateTime.desc()).all()
     
     return render_template('blog.html', page_title="Blogs!", blogs=blogs, single_view=False)
 
