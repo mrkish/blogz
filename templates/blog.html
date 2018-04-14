@@ -1,14 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
     <h2>Recent Posts</h2>
-
+    {% if not single_view %}
     {% for blog in blogs %}
     
-    <h3>{{blog.title}}</h3>
+    <h3><a href=/blog?id={{blog.id}}>{{blog.title}}</a></h3>
     <br>
     {{blog.body}}
     <hr>
     {% endfor %}
-
+    {% else %}
+    <h3>{{blog.title}}</h3>
+    <br>
+    {{blog.body}}
+    {% endif %}
 
 {% endblock %}

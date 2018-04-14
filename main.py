@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
 import cgi
 
@@ -6,7 +6,7 @@ app = Flask(__name__)
 app.config['DEBUG'] = True      # displays runtime errors in the browser, too
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:blog@localhost:8889/build-a-blog'
 app.config['SQLALCHEMY_ECHO'] = True
-
+app.secret_key = 'hluafweafhuwalhufwi'
 db = SQLAlchemy(app)
 
 
@@ -25,6 +25,14 @@ class Blog(db.Model):
 def index():
 
     blogs = Blog.query.all()
+
+    if request.method == 'GET' and request.args.get():
+        blog_id = request.args.get(blog.id)
+
+        single_view = True
+
+        return render_template('blog.html', single_view=True, page_title=blog.name,blog.title=blog_title,blog.body=blog_body)
+
     
     return render_template('blog.html', page_title="Blogs!", blogs=blogs)
 
@@ -34,6 +42,18 @@ def newpost():
     if request.method == 'POST':
         blog_title = cgi.escape(request.form['title'])
         blog_body = cgi.escape(request.form['body'])
+
+        error_msg = ''
+        if not blog_title:
+            error_msg += 'Missing blog title! '
+            
+        if not blog_body:
+            error_msg += 'Missing blog body!'
+
+        if error_msg:
+            flash(error_msg, 'error')
+            return redirect('/newpost')
+        
         new_blog = Blog(blog_title, blog_body)
         db.session.add(new_blog)
         db.session.commit()

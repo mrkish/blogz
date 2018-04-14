@@ -16,3 +16,7 @@ body {
     text-decoration: none
     color: #50abbbb6;
 }
+
+.error {
+    color: red;
+}
