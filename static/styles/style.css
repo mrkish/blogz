@@ -14,12 +14,28 @@ input {
 
 textarea {
     padding: 0.5em;
+    width: 100%;
+    height: 10em;
+    padding: 2em 2em;
+    box-sizing: border-box;
+    border: 0.15em solid #ccc;
+    border-radius: 0.5em;
+    background-color: #f8f8f8;
+    resize: none;
 }
 
 a:hover {
     color: #797979;
     text-decoration: none;
     font-weight: 700;
+}
+
+input[type=text] {
+    background-color: #3CBC8D;
+    color: white;
+    box-sizing: border-box;
+    border: 0.5em solid #ccc;
+    border-radius: 0.15em;
 }
 
 .dateTime{
