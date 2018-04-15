@@ -1,22 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
     {% if single_view == False %}
-        <h2>Recent Posts</h2>
+    <div class='post_item'>
+        <h2 class='landing_title'>Recent Posts</h2>
         {% for blog in blogs %}
-
-        <h3><a href='/blog?id={{blog.id}}' value={{blog.id}}>{{blog.title}}</a></h3>
+        <h3 class='post_title'><a href='/blog?id={{blog.id}}' value={{blog.id}}>{{blog.title}}</a></h3>
         <br>
         {{blog.body}}
-        <p>Posted: {{blog.dateTime}}</p>
+        <div class='dateTime'>Posted: {{blog.dateTime}}</div>
+        <br>
         <hr>
-
         {% endfor %}
-
     {% elif single_view == True %}
-        <h3>{{blog_title}}</h3>
+    <div class='post_item'>
+        <h3 class='post_title'>{{blog_title}}</h3>
         <br>
         {{blog_body}}
-        <p>Posted on: {{blog_dateTime}}</p>
+        <div class='dateTime'>Posted on: {{blog_dateTime}}</div>
+    </div>
     {% endif %}
-
 {% endblock %}
