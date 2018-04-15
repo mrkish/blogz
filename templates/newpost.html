@@ -1,15 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h2>Whatcha thinkin?</h2>
-    <div class='post-body'>
+    <h2 id='landing_title'>Whatcha thinkin?</h2>
+    <div class='post_item'>
         <form method='post'>
-        <p><label class='post_title'>Title: <input type='text' name='title' value={{title}}></label></p>
+        <p>
+            <label id='post_title_field'>Title: 
+                <input type='text' name='title' value={{title}}>
+            </label>
+        </p>
              {% if no_title_message %}
-            <p class='error'>{{no_title_message}}</p>
+            <p id='error'>{{no_title_message}}</p>
             {% endif%}
-        <p><label class='text_input'>Post: <textarea name='body' value={{body}}></textarea></label></p>
+        <p>
+            <label id='text_input_field'>Post: 
+                <textarea name='body' value={{body}}></textarea>
+            </label>
+        </p>
              {% if no_body_message %}
-             <p class='error'>{{no_body_message}}</p>
+             <p id='error'>{{no_body_message}}</p>
              {% endif%}
         <p><input type='submit' value='Post!'/></p>
         </form>

@@ -3,7 +3,13 @@ body {
 }
 
 a, a:visited {
-    color: #0a1612;
+    color: #3CBC8D;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+a:hover {
+    color: #313131;
     text-decoration: none;
     font-weight: 700;
 }
@@ -12,60 +18,77 @@ input {
     padding: 0.5em;
 }
 
+input[type=text] {
+    font-weight: 700;
+    color: #3CBC8D;
+    box-sizing: content-box;
+    border: 0.15em solid #ffffff;
+    border-radius: 0.15em;
+    background-color: #f3f3f3;
+}
+
+input[type=submit] {
+    font-weight: 700;
+    box-sizing: content-box;
+    border: 0.15em solid #ffffff;
+    border-radius: 0.15em;
+    background-color: #f3f3f3;
+}
+
+input[type=submit]:hover {
+    color: #3CBC8D;
+}
+
 textarea {
+    font-family: Calibri, sans-serif;
     padding: 0.5em;
     width: 100%;
     height: 10em;
     padding: 2em 2em;
     box-sizing: border-box;
-    border: 0.15em solid #ccc;
-    border-radius: 0.5em;
-    background-color: #f8f8f8;
+    border: 0.15em solid #ffffff;
+    border-radius: 0.15em;
+    background-color: #f3f3f3;
     resize: none;
 }
 
-a:hover {
-    color: #797979;
-    text-decoration: none;
-    font-weight: 700;
-}
-
-input[type=text] {
-    background-color: #3CBC8D;
-    color: white;
-    box-sizing: border-box;
-    border: 0.5em solid #ccc;
-    border-radius: 0.15em;
+#landing_title {
+    text-align: center;
 }
 
 .dateTime{
-    font-weight: 700;
-    padding: 1.5em;
-}
-
-.nav {
-    display: inline-block;
-    margin-bottom: 1em;
-    margin-top: 1em;
-    margin-left: 1em;
-    width: 50%;
+    font-weight: 400;
+    font-size: 0.75em;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .post_item {
-    margin-left: 3em;
-    margin-right: 3em;
+    background-color: #ffffffb6;
+    color: #2c2c2c;
+    box-shadow: 0.5em 0.5em 2em 0 #5f5f5f;
+    align-self: center;
+    padding: 1em;
+    width: 94%;
+    margin: 2em;
 }
 
-.post_body{
-    margin-left: 3em;
-    margin-right: 3em;
-}
-
-.error {
-    color: red;
+#error {
+    color: #ff2222;
+    font-weight: 900;
+    font-family: Consolas, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .body_content {
+    background: #ffffff52;
     padding: 1em;
     align-content: center;
+    display: block;
+}
+
+.nav {
+    display: block;
+    margin-bottom: 1em;
+    margin-top: 1em;
+    margin-left: 1em;
+    text-align: center;
 }
