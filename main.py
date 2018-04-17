@@ -27,7 +27,7 @@ class Blog(db.Model):
 @app.route('/blog')
 def index():
 
-    if request.method == 'GET' and request.args.get('id'):
+    if request.args.get('id'):
         single_view = True
         blog_id = int(request.args.get('id'))
 
@@ -78,18 +78,6 @@ def newpost():
         return redirect('/blog?id=' + new_blog_id)
 
     return render_template('newpost.html', page_title='New Post')
-
-
-#@app.route('/delete-blog', methods=['POST'])
-#def delete_blog():
-#
-#    blog_id = int(request.form['blog-id'])
-#    blog = blog.query.get(blog_id)
-#    return redirect('/')
-#    blog.completed = True
-#    db.session.add(blog)
-#    db.session.commit()
-
 
 if __name__ == '__main__':
     app.run()
