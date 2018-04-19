@@ -5,7 +5,7 @@ import cgi
 
 app = Flask(__name__)
 app.config['DEBUG'] = True      # displays runtime errors in the browser, too
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:blog@localhost:8889/build-a-blog'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:speakyourmind@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 app.secret_key = 'hluafweafhuwalhufwi'
 db = SQLAlchemy(app)
@@ -17,12 +17,22 @@ class Blog(db.Model):
     title = db.Column(db.String(120))
     body = db.Column(db.String(5000))
     dateTime = db.Column(db.DateTime)
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __init__(self, title, body, dateTime):
         self.title = title
         self.body = body
         self.dateTime = dateTime
 
+class User(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50))
+    password = db.Column(db.String(100))
+    blogs = db.Column(db.Integer, db.ForeignKey('blog.id'))
+
+    def __init__(self, title, body, dateTime):
+        self.username = username
 
 @app.route('/blog')
 def index():
@@ -69,7 +79,7 @@ def newpost():
         
         dateTime = datetime.utcnow()
 
-        new_blog = Blog(blog_title, blog_body, dateTime)
+        new_blog = Blog(blog_title, blog_body, dateTime, owner_id)
         db.session.add(new_blog)
         db.session.commit()
 
@@ -78,6 +88,80 @@ def newpost():
         return redirect('/blog?id=' + new_blog_id)
 
     return render_template('newpost.html', page_title='New Post')
+
+@app.route('/', methods=['POST', 'GET'])
+def signup():
+    user = ''
+    password = ''
+    verify = ''
+    email = ''
+
+    user_error = ''
+    email_error = ''
+    password_error = ''
+    password_match_error = ''
+
+    if request.method == 'POST':
+        user = cgi.escape(request.form['user'])
+        password = cgi.escape(request.form['password'])
+        verify = cgi.escape(request.form['verify'])
+        email = cgi.escape(request.form['email'])
+
+        if not user:
+            user_error = " Please enter a user name to proceed."
+
+        if len(user) < 3 and not user_error:
+            user_error = "User name too short."
+
+        if not password == verify or not verify:
+            password_match_error = 'Passwords do not match. (Copy and paste, yo)'
+
+        if not verify_password(password, verify):
+            password_error = """Password requirements: 8-20 length, 1 digit, 1 uppercase, and one special character."""
+
+        if email:
+            if len(email) < 3 or len(email) > 20:
+                email_error = 'Emails must be between 3-20 characters. '
+
+            if not verify_email(email):
+                email_error = email_error + \
+                    'Invalid formating and/or TLD. Only .com/.edu/.org/.net addresses accepted.'
+
+            if email_error:
+                email = ''
+
+        if user_error or email_error or password_error or password_match_error:
+            password = ''
+            verify = ''
+
+            return render_template('signup.html', title='Signup', user=user, useremail=email, password=password, verify=verify, user_error=user_error, email_error=email_error, password_error=password_error, password_match_error=password_match_error)
+
+        return render_template('welcome.html', title='Welcome, ' + user + '!', user=user)
+
+    return render_template('signup.html', title='Signup', user=user, password=password, verify=verify, email=email)
+
+def verify_email(email):
+    '''Checks for valid email via regex; returns a bool.
+    Only admits common TLD emails.'''
+
+    valid_email = re.compile('\w.+@\w+.(net|edu|com|org)')
+
+    if valid_email.match(email):
+        return True
+    else:
+        return False
+
+def verify_password(password, verify):
+    '''Checks for password symmetry and min. requirements via regex; returns a bool.
+    Requirements: 8-20 length, 1 special, 1 uppercase, 1 digit'''
+
+    valid_pass = re.compile(
+        '(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&])[A-Za-z\d@$#!%*?&]{8,20}')
+
+    if password == verify and valid_pass.match(password):
+        return True
+    else:
+        return False
 
 if __name__ == '__main__':
     app.run()
