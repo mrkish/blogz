@@ -23,6 +23,7 @@ class Blog(db.Model):
         self.title = title
         self.body = body
         self.dateTime = dateTime
+        self.owner_id = owner_id
 
 class User(db.Model):
 
@@ -33,6 +34,7 @@ class User(db.Model):
 
     def __init__(self, title, body, dateTime):
         self.username = username
+        self.password = password
 
 @app.route('/blog')
 def index():
@@ -89,6 +91,11 @@ def newpost():
 
     return render_template('newpost.html', page_title='New Post')
 
+@app.before_request()
+def before_request():
+    if (not user.id) and (current_url is not '/login' or '/signup')
+        return redirect('/login')
+
 @app.route('/', methods=['POST', 'GET'])
 def signup():
     user = ''
@@ -108,24 +115,23 @@ def signup():
         email = cgi.escape(request.form['email'])
 
         if not user:
-            user_error = " Please enter a user name to proceed."
+            user_error = ' Please enter a user name to proceed.'
 
         if len(user) < 3 and not user_error:
-            user_error = "User name too short."
+            user_error = 'User name too short.'
 
         if not password == verify or not verify:
             password_match_error = 'Passwords do not match. (Copy and paste, yo)'
 
         if not verify_password(password, verify):
-            password_error = """Password requirements: 8-20 length, 1 digit, 1 uppercase, and one special character."""
+            password_error = 'Password requirements: 8-20 length, 1 digit, 1 uppercase, and one special character.'
 
         if email:
             if len(email) < 3 or len(email) > 20:
                 email_error = 'Emails must be between 3-20 characters. '
 
             if not verify_email(email):
-                email_error = email_error + \
-                    'Invalid formating and/or TLD. Only .com/.edu/.org/.net addresses accepted.'
+                email_error = email_error + 'Invalid formating and/or TLD. Only .com/.edu/.org/.net addresses accepted.'
 
             if email_error:
                 email = ''
