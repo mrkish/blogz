@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, flash
+from flask import Flask, request, redirect, render_template, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import cgi
@@ -89,6 +89,7 @@ def newpost():
 
     return render_template('newpost.html', page_title='New Post')
 
+#
 @app.route('/', methods=['POST', 'GET'])
 def signup():
     user = ''
@@ -102,22 +103,18 @@ def signup():
     password_match_error = ''
 
     if request.method == 'POST':
-        user = cgi.escape(request.form['user'])
+        email = cgi.escape(request.form['email'])
         password = cgi.escape(request.form['password'])
         verify = cgi.escape(request.form['verify'])
-        email = cgi.escape(request.form['email'])
-
-        if not user:
-            user_error = " Please enter a user name to proceed."
 
         if len(user) < 3 and not user_error:
-            user_error = "User name too short."
+            user_error = 'User name too short.'
 
         if not password == verify or not verify:
             password_match_error = 'Passwords do not match. (Copy and paste, yo)'
 
         if not verify_password(password, verify):
-            password_error = """Password requirements: 8-20 length, 1 digit, 1 uppercase, and one special character."""
+            password_error = 'Password requirements: 8-20 length, 1 digit, 1 uppercase, and one special character.'
 
         if email:
             if len(email) < 3 or len(email) > 20:
@@ -130,13 +127,18 @@ def signup():
             if email_error:
                 email = ''
 
-        if user_error or email_error or password_error or password_match_error:
+        if email_error or password_error or password_match_error:
             password = ''
             verify = ''
 
-            return render_template('signup.html', title='Signup', user=user, useremail=email, password=password, verify=verify, user_error=user_error, email_error=email_error, password_error=password_error, password_match_error=password_match_error)
+            return render_template('signup.html', title='Signup', email=email, password=password, verify=verify, email_error=email_error, password_error=password_error, password_match_error=password_match_error)
 
-        return render_template('welcome.html', title='Welcome, ' + user + '!', user=user)
+        new_user = User(email, password)
+        db.session.add(new_user)
+        db.session.commit()
+        session['user'] = new_user.username
+
+        return redirect('/blog')
 
     return render_template('signup.html', title='Signup', user=user, password=password, verify=verify, email=email)
 
