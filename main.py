@@ -1,12 +1,12 @@
 from flask import Flask, request, redirect, render_template, flash, session
 from datetime import datetime
-from hashutils import make_salt,make_pw_hash,check_pw_hash
-from passutils import verify_email, verify_password
+from hashutils import make_salt, make_pw_hash, check_pw_hash
+from passutils import verify_password
 from app import app,db
 from models import User, Blog
 import cgi
 
-# Requires login
+# Requires login but allows CSS to be loaded across all pages
 @app.before_request
 def require_login():
     allowed_routes = ['login', 'signup']

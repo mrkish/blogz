@@ -6,7 +6,7 @@
     <div class="post_item">
         <h3>
             <a href='/blog?id={{blog.id}}' value={{blog.id}}>{{blog.title}}</a> |
-            <span class='dateTime'>Posted: {{blog.dateTime}}</span> | Author: <a href="/blog?userID={{author}}">{{author}}</a></h3>
+            <span class='dateTime'>Posted: {{blog.dateTime}}</span> | <span class='dateTime'>Author: <a href="/blog?userID={{author}}">{{author}}</a></span></h3>
         {{blog.body}}
     </div>
     {% endfor %}

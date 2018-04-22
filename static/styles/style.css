@@ -27,6 +27,15 @@ input[type=text] {
     background-color: #f3f3f3;
 }
 
+input[type=password] {
+    font-weight: 700;
+    color: #3CBC8D;
+    box-sizing: content-box;
+    border: 0.15em solid #ffffff;
+    border-radius: 0.15em;
+    background-color: #f3f3f3;
+}
+
 input[type=submit] {
     font-weight: 700;
     box-sizing: content-box;
@@ -57,8 +66,8 @@ textarea {
 }
 
 .dateTime{
-    font-weight: 400;
-    font-size: 0.75em;
+    font-weight: 600;
+    font-size: 0.70em;
     font-family: Arial, Helvetica, sans-serif;
 }
 

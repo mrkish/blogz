@@ -5,14 +5,14 @@
     <h2 id='landing_title'>Recent Entries</h2>
         {% for blog in blogs %}
         <div class="post_item">
-        <h3><a href='/blog?id={{blog.id}}' value={{blog.id}}>{{blog.title}}</a>  |  <span class='dateTime'>Posted: {{blog.dateTime}}</span>   |   Author: <a href="/blog?userID={{blog.author.username}}" value={{blog.author.username}}>{{blog.author.username}}</a></h3>
+        <h3><a href='/blog?id={{blog.id}}' value={{blog.id}}>{{blog.title}}</a>  |  <span class='dateTime'>Posted: {{blog.dateTime}}</span>   | <span class='dateTime'>Author: <a href="/blog?userID={{blog.author.username}}" value={{blog.author.username}}>{{blog.author.username}}</a></span></h3>
         {{blog.body}}
         </div>
         {% endfor %}
     {% elif single_view == True %}
     <div class='post_item'>
-        <h3>{{blog_title}}</a>  |  <span class='dateTime'>Posted: {{blog_dateTime}}</span> | Author:
-        <a href="/blog?userID={{blog_author}}" value={{blog_author}}>{{blog_author}}</a></h3>
+        <h3>{{blog_title}}</a>  |  <span class='dateTime'>Posted: {{blog_dateTime}}</span> | <span class='dateTime'>Author:
+        <a href="/blog?userID={{blog_author}}" value={{blog_author}}>{{blog_author}}</a></span></h3>
         {{blog_body}}
     </div>
     {% endif %}
