@@ -6,7 +6,7 @@
     <h2 id='landing_title'>Recent Entries</h2>
         {% for blog in blogs %}
         <div class="post_item">
-        <h3><a href='/blog?id={{blog.id}}' value={{blog.id}}>{{blog.title}}</a>  |  <span class='dateTime'>Posted: {{blog.dateTime}}</span></h3>
+        <h3><a href='/blog?id={{blog.id}}' value={{blog.id}}>{{blog.title}}</a>  |  <span class='dateTime'>Posted: {{blog.dateTime}}</span>   |   Author: <a href="/blog?userID={{author}}" value={{author}}>{{author}}</a></h3>
         {{blog.body}}
         </div>
         {% endfor %}

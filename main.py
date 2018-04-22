@@ -13,11 +13,6 @@ def require_login():
     if request.endpoint not in allowed_routes and 'user' not in session:
         return redirect('/login')
 
-# Redirects root directory to login
-#@app.route('/')
-#def index():
-#    return redirect('/login')
-
 # Main content page
 @app.route('/blog')
 def index():
@@ -35,8 +30,11 @@ def index():
         blog_title = single_blog.title
         blog_body = single_blog.body
         blog_dateTime = single_blog.dateTime
+        blog_author = single_blog.author
+        author = User.query.filter_by(username=blog_author)  # TODO: Figure out how to get the author id!
+        print(author)
         
-        return render_template('blog.html', single_view=True, page_title=blog_title,blog_title=blog_title,blog_body=blog_body,blog_dateTime=blog_dateTime)
+        return render_template('blog.html', single_view=True, page_title=single_blog.title,blog_title=single_blog.title,blog_body=single_blog.body,blog_dateTime=blog_dateTime, author=author)
 
     blogs = Blog.query.order_by(Blog.dateTime.desc()).all()
     
@@ -66,9 +64,8 @@ def newpost():
         dateTime = datetime.utcnow()
 
         user = User.query.filter_by(username=session['user']).first()
-        author_id = user.id
 
-        new_blog = Blog(blog_title, blog_body, dateTime, author_id)
+        new_blog = Blog(blog_title, blog_body, dateTime, user)
         db.session.add(new_blog)
         db.session.commit()
 
