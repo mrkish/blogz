@@ -1,8 +1,6 @@
-from flask import Flask, request, redirect, render_template, flash, session
+from flask import Flask, request, redirect, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from hashutils import make_salt,make_pw_hash,check_pw_hash
-from passutils import verify_email, verify_password
 import cgi
 
 app = Flask(__name__)
@@ -19,24 +17,22 @@ class Blog(db.Model):
     title = db.Column(db.String(120))
     body = db.Column(db.String(5000))
     dateTime = db.Column(db.DateTime)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title, body, dateTime, author):
+    def __init__(self, title, body, dateTime):
         self.title = title
         self.body = body
         self.dateTime = dateTime
-        self.author = author
 
 class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50))
-    passwordHash = db.Column(db.String(120))
-    blogs = db.relationship('Blog', backref='author')
+    password = db.Column(db.String(100))
+    blogs = db.Column(db.Integer, db.ForeignKey('blog.id'))
 
-    def __init__(self, username, password):
+    def __init__(self, title, body, dateTime):
         self.username = username
-        self.passwordHash = make_pw_hash(password)
 
 @app.route('/blog')
 def index():
@@ -93,12 +89,6 @@ def newpost():
 
     return render_template('newpost.html', page_title='New Post')
 
-@app.before_request
-def require_login():
-    allowed_routes = ['login', 'signup']
-    if request.endpoint not in allowed_routes and 'email' not in session:
-        return redirect('/login')
-
 @app.route('/', methods=['POST', 'GET'])
 def signup():
     user = ''
@@ -112,62 +102,66 @@ def signup():
     password_match_error = ''
 
     if request.method == 'POST':
-        email = cgi.escape(request.form['email'])
+        user = cgi.escape(request.form['user'])
         password = cgi.escape(request.form['password'])
         verify = cgi.escape(request.form['verify'])
+        email = cgi.escape(request.form['email'])
+
+        if not user:
+            user_error = " Please enter a user name to proceed."
 
         if len(user) < 3 and not user_error:
-            user_error = 'User name too short.'
+            user_error = "User name too short."
 
         if not password == verify or not verify:
             password_match_error = 'Passwords do not match. (Copy and paste, yo)'
 
         if not verify_password(password, verify):
-            password_error = 'Password requirements: 8-20 length, 1 digit, 1 uppercase, and one special character.'
+            password_error = """Password requirements: 8-20 length, 1 digit, 1 uppercase, and one special character."""
 
         if email:
             if len(email) < 3 or len(email) > 20:
                 email_error = 'Emails must be between 3-20 characters. '
 
             if not verify_email(email):
-                email_error = email_error + 'Invalid formating and/or TLD. Only .com/.edu/.org/.net addresses accepted.'
+                email_error = email_error + \
+                    'Invalid formating and/or TLD. Only .com/.edu/.org/.net addresses accepted.'
 
             if email_error:
                 email = ''
 
-        if email_error or password_error or password_match_error:
+        if user_error or email_error or password_error or password_match_error:
             password = ''
             verify = ''
 
-            return render_template('signup.html', title='Signup', email=email, password=password, verify=verify, email_error=email_error, password_error=password_error, password_match_error=password_match_error)
+            return render_template('signup.html', title='Signup', user=user, useremail=email, password=password, verify=verify, user_error=user_error, email_error=email_error, password_error=password_error, password_match_error=password_match_error)
 
-        new_user = User(email,password)
-        db.session.add(new_user)
-        db.session.commit()
-        session['user'] = new_user.username
-
-        return redirect('/blog')
+        return render_template('welcome.html', title='Welcome, ' + user + '!', user=user)
 
     return render_template('signup.html', title='Signup', user=user, password=password, verify=verify, email=email)
 
-@app.route('/login', methods=['GET','POST'])
-def login():
-    '''Provides login page for registered users to login. Verifies password hash if form data is submitted'''
-    
-    username = user.username
-    user = User.query.filter_by(sessionUser=session['username']).first()
+def verify_email(email):
+    '''Checks for valid email via regex; returns a bool.
+    Only admits common TLD emails.'''
 
-    if request.method == 'POST':
-        user = cgi.escape(request.form['username'])
-        password = cgi.escape(request.form['password'])
+    valid_email = re.compile('\w.+@\w+.(net|edu|com|org)')
 
-        if username and check_pw_hash(password, user.pw_hash):
-            return redirect('/blog')
-        else:
-            return redirect('/login')
+    if valid_email.match(email):
+        return True
+    else:
+        return False
 
-    return render_template('/login')
+def verify_password(password, verify):
+    '''Checks for password symmetry and min. requirements via regex; returns a bool.
+    Requirements: 8-20 length, 1 special, 1 uppercase, 1 digit'''
 
+    valid_pass = re.compile(
+        '(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&])[A-Za-z\d@$#!%*?&]{8,20}')
+
+    if password == verify and valid_pass.match(password):
+        return True
+    else:
+        return False
 
 if __name__ == '__main__':
     app.run()
