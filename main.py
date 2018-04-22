@@ -33,8 +33,9 @@ def index():
         userName= User.query.filter_by(username=request.args.get('userID')).first()
         
         blogs = Blog.query.filter_by(author=userName).all()
+        author = blogs[0].author.username
 
-        return render_template('blog.html', page_title="Blogs!", blogs=blogs, single_view=False)
+        return render_template('singleUser.html', page_title="Blogs!", author=author, blogs=blogs, single_view=False)
 
     blogs = Blog.query.order_by(Blog.dateTime.desc()).all()
     
@@ -82,6 +83,7 @@ def signup():
     password = ''
     verify = ''
 
+    user_error = ''
     password_error = ''
     password_match_error = ''
 
@@ -90,17 +92,23 @@ def signup():
         password = cgi.escape(request.form['password'])
         verify = cgi.escape(request.form['verify'])
 
+        username_exists = User.query.filter_by(username=user).first()
+
+        if username_exists:
+            user_error = 'Username already exists!'
+
         if not password == verify or not verify:
             password_match_error = 'Passwords do not match. (Copy and paste, yo)'
 
         if not verify_password(password, verify):
             password_error = 'Password requirements: 8-20 length, 1 digit, 1 uppercase, and one special character.'
 
-        if password_error or password_match_error:
+        if user_error or password_error or password_match_error:
+            user = ''
             password = ''
             verify = ''
 
-            return render_template('signup.html', title='Signup', user=user, password=password, verify=verify, email_error=email_error, password_error=password_error, password_match_error=password_match_error)
+            return render_template('signup.html', title='Signup', user=user, password=password, verify=verify, user_error=user_error, password_error=password_error, password_match_error=password_match_error)
 
         new_user = User(user,password)
         db.session.add(new_user)
@@ -127,23 +135,26 @@ def login():
 
         if not user:
             user_error = 'User name not found or not entered!'
+            return render_template('login.html', user_error=user_error)
 
         if not check_pw_hash(password, user.passwordHash):
             password_error = 'Incorrect password!'
+            return render_template('login.html', password_error=password_error, user_error=user_error)
 
         if not user_error or password_error:
             session['user'] = user.username
             return redirect('/blog')
 
-        return redirect('/login')
+        session['user'] = user.username
+        return redirect('/blog')
 
     return render_template('login.html')
 
 #
-@app.route('/logout')
+@app.route('/logout', methods=['GET'])
 def logout():
     del session['user']
-    return redirect('/login')
+    return redirect('/')
 
 #
 if __name__ == '__main__':

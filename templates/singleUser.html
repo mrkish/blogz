@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 
-    <h2 id='landing_title'>{{user}}'s Recent Entries</h2>
+    <h2 id='landing_title'>Entries by {{author}}</h2>
     {% for blog in blogs %}
     <div class="post_item">
         <h3>
             <a href='/blog?id={{blog.id}}' value={{blog.id}}>{{blog.title}}</a> |
-            <span class='dateTime'>Posted: {{blog.dateTime}}</span> | Author: {{user}}</h3>
+            <span class='dateTime'>Posted: {{blog.dateTime}}</span> | Author: <a href="/blog?userID={{author}}">{{author}}</a></h3>
         {{blog.body}}
     </div>
+    {% endfor %}
 
 {% endblock %}
