@@ -10,7 +10,7 @@ import cgi
 @app.before_request
 def require_login():
     allowed_routes = ['login', 'signup']
-    if request.endpoint not in allowed_routes and 'user' not in session:
+    if request.endpoint not in allowed_routes and 'user' not in session and '/static/' not in request.path:
         return redirect('/login')
 
 # Main content page
@@ -40,6 +40,14 @@ def index():
     blogs = Blog.query.order_by(Blog.dateTime.desc()).all()
     
     return render_template('blog.html', page_title="Blogs!", blogs=blogs, single_view=False)
+
+# Displays all users
+@app.route('/users')
+def users():
+
+    users = User.query.all()
+    
+    return render_template('index.html', page_title="Users!", users=users)
 
 # Page to input a new post to the blog
 @app.route('/newpost', methods=['POST','GET'])

@@ -6,7 +6,7 @@
 </head>
 <body>
     <div class='nav'>
-        <a href='/blog'>Home</a>  |  <a href='/newpost'>New Post</a> |  <a href='/logout'>Logout</a>
+        <a href='/blog'>Home</a>  | <a href='/users'>Users</a> | <a href='/newpost'>New Post</a> |  <a href='/logout'>Logout</a>
          {% with messages = get_flashed_messages() %}
             {% for message in messages %}
             <p id='error'>{{message}}</p>
