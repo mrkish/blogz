@@ -22,19 +22,19 @@ def index():
         blog_id = int(request.args.get('id'))
 
         single_blog = Blog.query.get(blog_id)
-        
+
         if single_blog == None:
             flash('Blog id {0} does not exist!'.format(blog_id), 'error')
             return redirect('/blog')
         
-        blog_title = single_blog.title
-        blog_body = single_blog.body
-        blog_dateTime = single_blog.dateTime
-        blog_author = single_blog.author
-        author = User.query.filter_by(username=blog_author)  # TODO: Figure out how to get the author id!
-        print(author)
+        return render_template('blog.html', single_view=True, page_title=single_blog.title,blog_title=single_blog.title,blog_body=single_blog.body,blog_dateTime=single_blog.dateTime, blog_author=single_blog.author.username)
+
+    if request.args.get('userID'):
+        userName= User.query.filter_by(username=request.args.get('userID')).first()
         
-        return render_template('blog.html', single_view=True, page_title=single_blog.title,blog_title=single_blog.title,blog_body=single_blog.body,blog_dateTime=blog_dateTime, author=author)
+        blogs = Blog.query.filter_by(author=userName).all()
+
+        return render_template('blog.html', page_title="Blogs!", blogs=blogs, single_view=False)
 
     blogs = Blog.query.order_by(Blog.dateTime.desc()).all()
     
