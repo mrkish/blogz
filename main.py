@@ -16,7 +16,7 @@ def require_login():
 # Main content page
 @app.route('/blog')
 def index():
-
+    # TODO: I want to be able to handle non-alpha blog ID requests and display the appropriate errors.
     if request.args.get('id'):
         single_view = True
         single_blog = 0
