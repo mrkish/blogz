@@ -20,7 +20,6 @@ def index():
     if request.args.get('id'):
         single_view = True
         blog_id = int(request.args.get('id'))
-
         single_blog = Blog.query.get(blog_id)
 
         if single_blog == None:
@@ -30,12 +29,14 @@ def index():
         return render_template('blog.html', single_view=True, page_title=single_blog.title,blog_title=single_blog.title,blog_body=single_blog.body,blog_dateTime=single_blog.dateTime, blog_author=single_blog.author.username)
 
     if request.args.get('userID'):
-        userName= User.query.filter_by(username=request.args.get('userID')).first()
+        user_id= User.query.filter_by(username=request.args.get('userID')).first()
+        blogs = Blog.query.filter_by(author=user_id).all()
+        userName = request.args.get('userID')
         
-        blogs = Blog.query.filter_by(author=userName).all()
-        author = blogs[0].author.username
-
-        return render_template('singleUser.html', page_title="Blogs!", author=author, blogs=blogs, single_view=False)
+        if len(blogs) == 0:
+            userName = 'Nobody/Nowho!'
+            
+        return render_template('singleUser.html', page_title=userName + "'s Posts!", author=userName, blogs=blogs, single_view=False)
 
     blogs = Blog.query.order_by(Blog.dateTime.desc()).all()
     
@@ -44,19 +45,17 @@ def index():
 # Displays all users
 @app.route('/users')
 def users():
-
     users = User.query.all()
-    
     return render_template('index.html', page_title="Users!", users=users)
 
 # Page to input a new post to the blog
 @app.route('/newpost', methods=['POST','GET'])
 def newpost():
+    username = session['user']
 
     if request.method == 'POST':
         blog_title = cgi.escape(request.form['title'])
         blog_body = cgi.escape(request.form['body'])
-
         no_title_message = ''
         no_body_message = ''
 
@@ -67,22 +66,18 @@ def newpost():
             no_body_message = 'Missing blog body!'
 
         if no_body_message or no_title_message:
-
             return render_template('newpost.html', page_title='New Post', no_title_message=no_title_message, no_body_message=no_body_message, blog_title=blog_title,blog_body=blog_body)
         
         dateTime = datetime.utcnow()
-
         user = User.query.filter_by(username=session['user']).first()
-
         new_blog = Blog(blog_title, blog_body, dateTime, user)
         db.session.add(new_blog)
         db.session.commit()
-
         new_blog_id = str(new_blog.id)
 
         return redirect('/blog?id=' + new_blog_id)
 
-    return render_template('newpost.html', page_title='New Post')
+    return render_template('newpost.html', page_title=username + "'s New Post!")
 
 # Page to create a user account; requires a user name and a password (double-entered to verify input)
 @app.route('/signup', methods=['POST', 'GET'])
@@ -99,7 +94,6 @@ def signup():
         user = cgi.escape(request.form['user'])
         password = cgi.escape(request.form['password'])
         verify = cgi.escape(request.form['verify'])
-
         username_exists = User.query.filter_by(username=user).first()
 
         if username_exists:
@@ -130,15 +124,12 @@ def signup():
 # Login page for users with existing accounts
 @app.route('/login', methods=['GET','POST'])
 def login():
-    '''Provides login page for registered users to login. Verifies password hash if form data is submitted'''
- 
     user_error = ''
     password_error = ''
 
     if request.method == 'POST':
         username = cgi.escape(request.form['username'])
         password = cgi.escape(request.form['password'])
-
         user = User.query.filter_by(username=username).first()
 
         if not user:

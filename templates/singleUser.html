@@ -2,6 +2,7 @@
 {% block content %}
 
     <h2 id='landing_title'>Entries by {{author}}</h2>
+    {% if blogs | length %}
     {% for blog in blogs %}
     <div class="post_item">
         <h3>
@@ -10,5 +11,8 @@
         {{blog.body}}
     </div>
     {% endfor %}
+    {% else %}
+    <h3>{{author}} hasn't made any posts yet!</h3>
+    {% endif %}
 
 {% endblock %}
