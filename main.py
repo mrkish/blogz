@@ -19,13 +19,19 @@ def index():
 
     if request.args.get('id'):
         single_view = True
-        blog_id = int(request.args.get('id'))
-        single_blog = Blog.query.get(blog_id)
+        single_blog = 0
+        blog_id = request.args.get('id')
+
+        if not request.args.get('id').isnumeric():
+            single_blog = None
 
         if single_blog == None:
             flash('Blog id {0} does not exist!'.format(blog_id), 'error')
             return redirect('/blog')
-        
+
+        blog_id = int(request.args.get('id'))
+        single_blog = Blog.query.get(blog_id)
+
         return render_template('blog.html', single_view=True, page_title=single_blog.title,blog_title=single_blog.title,blog_body=single_blog.body,blog_dateTime=single_blog.dateTime, blog_author=single_blog.author.username)
 
     if request.args.get('userID'):
@@ -34,7 +40,8 @@ def index():
         userName = request.args.get('userID')
         
         if len(blogs) == 0:
-            userName = 'Nobody/Nowho!'
+            flash('There are no registered users named {0}!'.format(userName), 'error')
+            userName = 'Nobody, no one, no who'
             
         return render_template('singleUser.html', page_title=userName + "'s Posts!", author=userName, blogs=blogs, single_view=False)
 
