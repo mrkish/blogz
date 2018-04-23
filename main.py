@@ -18,18 +18,19 @@ def require_login():
 def index():
     # TODO: I want to be able to handle non-alpha blog ID requests and display the appropriate errors.
     if request.args.get('id'):
-        single_view = True
+        #single_view = True
         single_blog = 0
         blog_id = request.args.get('id')
 
-        if not request.args.get('id').isnumeric():
-            single_blog = None
+        if not blog_id.isnumeric():
+            flash('Blog ID must be a integer, not an alpha character.')
+            return redirect('/blog')
 
         if single_blog == None:
             flash('Blog id {0} does not exist!'.format(blog_id), 'error')
             return redirect('/blog')
 
-        blog_id = int(request.args.get('id'))
+        blog_id = int(blog_id)
         single_blog = Blog.query.get(blog_id)
 
         return render_template('blog.html', single_view=True, page_title=single_blog.title,blog_title=single_blog.title,blog_body=single_blog.body,blog_dateTime=single_blog.dateTime, blog_author=single_blog.author.username)
