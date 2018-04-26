@@ -9,16 +9,14 @@ import cgi
 # Requires login but allows CSS to be loaded across all pages
 @app.before_request
 def require_login():
-    allowed_routes = ['login', 'signup']
+    allowed_routes = ['login', 'signup','blog']
     if request.endpoint not in allowed_routes and 'user' not in session and '/static/' not in request.path:
         return redirect('/login')
 
 # Main content page
 @app.route('/blog')
-def index():
-    # TODO: I want to be able to handle non-alpha blog ID requests and display the appropriate errors.
+def blog():
     if request.args.get('id'):
-        #single_view = True
         single_blog = 0
         blog_id = request.args.get('id')
 
@@ -85,7 +83,7 @@ def newpost():
 
         return redirect('/blog?id=' + new_blog_id)
 
-    return render_template('newpost.html', page_title=username + "'s New Post!")
+    return render_template('newpost.html', page_title=username + " is speaking their mind!", username=username)
 
 # Page to create a user account; requires a user name and a password (double-entered to verify input)
 @app.route('/signup', methods=['POST', 'GET'])
